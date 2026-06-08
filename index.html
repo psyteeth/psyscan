@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сканер профиля психолога</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Golos+Text:wght@400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F4F2ED;
+  --bg2: #FFFFFF;
+  --bg3: #ECEAE4;
+  --bg-dark: #1E1C18;
+  --text: #1A1917;
+  --text2: #6B6860;
+  --text3: #A8A59F;
+  --border: rgba(0,0,0,0.09);
+  --border2: rgba(0,0,0,0.18);
+  --accent: #2A5F2A;
+  --accent-l: #EAF4EA;
+  --accent-bright: #4CAF4C;
+  --coral: #B33A2A;
+  --coral-l: #FCECEA;
+  --teal: #1A6255;
+  --teal-l: #E6F2F0;
+  --purple: #4F46B8;
+  --purple-l: #EEEDFB;
+  --amber: #A0690A;
+  --amber-l: #FDF4E0;
+  --radius: 12px;
+  --radius-lg: 18px;
+}
+
+body {
+  font-family: 'Golos Text', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 1.5rem 1rem 4rem;
+}
+
+.page { max-width: 680px; margin: 0 auto; }
+
+.header {
+  margin-bottom: 1.75rem;
+  padding: 20px 22px;
+  background: var(--bg-dark);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+}
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: rgba(76,175,76,0.1);
+  pointer-events: none;
+}
+.header-tag {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-bright);
+  margin-bottom: 10px;
+}
+.header-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #F4F2ED;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+.header-sub {
+  font-size: 13px;
+  color: rgba(244,242,237,0.5);
+  line-height: 1.6;
+}
+
+.progress-wrap { margin-bottom: 1.5rem; }
+.progress-track {
+  height: 4px;
+  background: var(--bg3);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+.progress-label {
+  font-size: 11px;
+  color: var(--text3);
+  display: flex;
+  justify-content: space-between;
+}
+
+.instruction {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.instruction-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+.instruction-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.instruction-text strong { color: var(--accent); font-weight: 600; }
+
+.question-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.question-num {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.question-num::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent-bright);
+  flex-shrink: 0;
+}
+.question-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.question-hint {
+  font-size: 12px;
+  color: var(--text3);
+  margin-bottom: 16px;
+  line-height: 1.5;
+  background: var(--bg3);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 13px 16px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  text-align: left;
+  font-family: 'Golos Text', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+  width: 100%;
+}
+.option:hover { border-color: var(--border2); background: #E4E2DC; transform: translateX(3px); }
+.option:active { transform: translateX(1px); }
+.option.selected { border-color: var(--accent); background: var(--accent-l); color: var(--accent); font-weight: 500; }
+.option:disabled { cursor: default; transform: none; }
+
+.feedback {
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 12px;
+  border-left: 3px solid;
+}
+.feedback.good { background: var(--teal-l); border-color: var(--teal); color: var(--teal); }
+.feedback.bad { background: var(--coral-l); border-color: var(--coral); color: var(--coral); }
+
+.manual-ref {
+  background: var(--purple-l);
+  border-left: 3px solid var(--purple);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--purple);
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  border-radius: var(--radius); padding: 11px 22px;
+  font-size: 14px; font-family: 'Golos Text', sans-serif;
+  font-weight: 600; cursor: pointer;
+  transition: all 0.15s; border: none;
+}
+.btn-primary { background: var(--bg-dark); color: #F4F2ED; }
+.btn-primary:hover { background: #2D2B25; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.14); }
+.btn-ghost { background: var(--bg2); color: var(--text2); border: 1px solid var(--border2); }
+.btn-ghost:hover { background: var(--bg3); }
+.nav-row { display: flex; gap: 10px; margin-top: 1rem; flex-wrap: wrap; }
+
+/* ЧЕКЛИСТ */
+.checklist { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
+.check-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 11px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+.check-item:hover { border-color: var(--border2); background: #E4E2DC; }
+.check-item.checked { border-color: var(--accent); background: var(--accent-l); }
+.check-item input[type=checkbox] { display: none; }
+.check-box {
+  width: 18px; height: 18px;
+  border: 1.5px solid var(--border2);
+  border-radius: 5px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  background: var(--bg2);
+}
+.check-item.checked .check-box {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.check-box::after { content: ''; display: none; }
+.check-item.checked .check-box::after {
+  content: '✓';
+  display: block;
+  font-size: 11px;
+  color: white;
+  font-weight: 700;
+  line-height: 1;
+}
+.check-label { font-size: 13px; color: var(--text); line-height: 1.5; flex: 1; }
+.check-item.checked .check-label { color: var(--accent); font-weight: 500; }
+.check-signal {
+  font-size: 10px;
+  color: var(--text3);
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: var(--bg2);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.check-item.checked .check-signal { background: var(--accent-l); color: var(--accent); }
+.check-result {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: var(--teal-l);
+  border-left: 3px solid var(--teal);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--teal);
+  line-height: 1.6;
+  display: none;
+}
+.check-btn {
+  margin-top: 10px;
+  background: var(--bg-dark);
+  color: #F4F2ED;
+  border: none;
+  border-radius: var(--radius);
+  padding: 10px 20px;
+  font-size: 13px;
+  font-family: 'Golos Text', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.check-btn:hover { background: #2D2B25; }
+
+/* ЭКРАНЫ */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* РЕЗУЛЬТАТ */
+.result-section { margin-bottom: 1.25rem; }
+.result-label {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 10px;
+}
+.profile-built { box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  background: var(--bg2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.profile-row {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 0.5px solid var(--border);
+  font-size: 13px;
+}
+.profile-row:last-child { border-bottom: none; }
+.profile-key { color: var(--text3); min-width: 120px; flex-shrink: 0; }
+.profile-val { color: var(--text); line-height: 1.5; }
+.profile-val .tag {
+  display: inline-block;
+  background: rgba(200,255,0,0.1);
+  color: var(--accent);
+  border-radius: 4px;
+  padding: 1px 7px;
+  font-size: 11px;
+  margin-right: 4px;
+  margin-bottom: 3px;
+}
+
+.score-display {
+  background: var(--bg-dark);
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+.score-num {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--accent-bright);
+  line-height: 1;
+}
+.score-label { font-size: 13px; color: rgba(244,242,237,0.55); margin-top: 6px; }
+
+.vuln-card {
+  background: var(--coral-l);
+  border-left: 3px solid var(--coral);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--coral);
+  line-height: 1.6;
+}
+.vuln-card .vuln-title { font-weight: 600; margin-bottom: 4px; color: var(--coral); }
+.vuln-card .vuln-text { color: var(--text2); font-size: 12px; }
+
+.footer {
+  margin-top: 2.5rem;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text3);
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+.footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ИНТРО -->
+<div class="screen active" id="s-intro">
+  <div class="header">
+    <div class="header-tag">Психостоматология №1</div>
+    <div class="header-title">Сканер профиля психолога</div>
+    <div class="header-sub">Открой любой Instagram-профиль психолога рядом с этой игрой. Отвечай на вопросы — учись читать добычу.</div>
+  </div>
+  <div class="instruction">
+    <div class="instruction-icon">👁</div>
+    <div class="instruction-text">
+      <strong>Как играть:</strong> открой Instagram и найди любого психолога. Держи его профиль перед глазами. Игра будет задавать вопросы — ты ищешь ответы в реальном профиле и выбираешь. Нет правильных ответов без наблюдения.
+    </div>
+  </div>
+  <div class="instruction">
+    <div class="instruction-icon">⚡</div>
+    <div class="instruction-text">
+      <strong>Цель:</strong> после 8 вопросов ты соберёшь полный профиль добычи — свет, крючок, удержание, эксплуатация. И увидишь где сам открыт.
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="startGame()" style="margin-top:1rem">Открыть Instagram и начать →</button>
+  <div class="footer"><a href="https://psyteeth.ru" target="_blank">psyteeth.ru</a> — Психостоматология №1</div>
+</div>
+
+<!-- ИГРА -->
+<div class="screen" id="s-game">
+  <div class="progress-wrap">
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="progress-label">
+      <span id="progress-text">Вопрос 1 из 8</span>
+      <span id="progress-pct">0%</span>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="question-num" id="q-num"></div>
+    <div class="question-text" id="q-text"></div>
+    <div class="question-hint" id="q-hint"></div>
+    <div class="options" id="q-options"></div>
+    <div class="feedback" id="q-feedback" style="display:none"></div>
+    <div class="manual-ref" id="q-ref" style="display:none"></div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn btn-primary" onclick="nextQ()" id="next-btn" style="display:none">Следующий вопрос →</button>
+  </div>
+</div>
+
+<!-- РЕЗУЛЬТАТ -->
+<div class="screen" id="s-result">
+  <div class="header">
+    <div class="header-tag">Профиль собран</div>
+    <div class="header-title">Добыча прочитана</div>
+  </div>
+
+  <div class="score-display">
+    <div class="score-num" id="final-score"></div>
+    <div class="score-label" id="final-label"></div>
+  </div>
+
+  <div class="result-section">
+    <div class="result-label">Профиль добычи который ты собрал</div>
+    <div class="profile-built" id="profile-built"></div>
+  </div>
+
+  <div class="result-section" id="vuln-section" style="display:none">
+    <div class="result-label">Где ты сам открыт — что говорят твои ошибки</div>
+    <div id="vuln-list"></div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn btn-ghost" onclick="startGame()">↺ Другой профиль</button>
+    <button class="btn btn-primary" onclick="startGame()">Ещё раунд →</button>
+  </div>
+  <div class="footer"><a href="https://psyteeth.ru" target="_blank">psyteeth.ru</a> — Психостоматология №1</div>
+</div>
+
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    section: "Шаг 1 — Шапка профиля",
+    text: "Отметь всё что видишь в шапке профиля",
+    hint: "👆 Смотри первые 2-3 строки шапки. Можно отметить несколько.",
+    type: "checklist",
+    items: [
+      { text: "Слова: честно, правда, этика, без манипуляций", signal: "мораль" },
+      { text: "Слова: помогаю, помощь, клиенты, запись, результаты", signal: "нужность" },
+      { text: "Слова: исследования, наука, методы, опыт работы N лет/часов", signal: "ум" },
+      { text: "Личный опыт: «сама прошла», «знаю не понаслышке», мама, декрет", signal: "жертва" },
+      { text: "Специализация: онко, кризис, психосоматика, зависимости, пары", signal: "масштаб" },
+      { text: "Уникальность: «не как все», «особый подход», нет чёткой специализации", signal: "уникальность" },
+      { text: "Борьба: феминизм, система, патриархат, «проснитесь», враг", signal: "идеология" },
+      { text: "Ничего из этого — просто имя и «психолог»", signal: "закрытый" },
+    ],
+    ref: "Флоучарт: Шаг 1 — Определи свет",
+    key: "light",
+  },
+  {
+    section: "Шаг 1 — Визуал и посты",
+    text: "Отметь всё что видишь в сетке постов и на фото",
+    hint: "👆 Смотри только картинки, не читай тексты. Можно отметить несколько.",
+    type: "checklist",
+    items: [
+      { text: "Тревожное или серьёзное лицо, снимает себя без улыбки", signal: "жертва/старательница" },
+      { text: "Дети в кадре, бытовые съёмки, домашняя обстановка", signal: "мама-психолог" },
+      { text: "Горы, море, путешествия, активная жизнь", signal: "уникальность/сила" },
+      { text: "Профессиональные фото, студия, белый пиджак, флипчарт", signal: "мораль/роль" },
+      { text: "Уверенная поза, стиль, брендовые вещи, зеркальное селфи", signal: "сила/власть" },
+      { text: "Слайды с текстом, инфографика, экспертные карточки", signal: "ум/контент" },
+      { text: "Эмоциональные крупные планы, рука на груди, глаза закрыты", signal: "телесная/жертва" },
+      { text: "Пары фото с партнёром или командой", signal: "близость/доверие" },
+    ],
+    ref: "Флоучарт: Шаг 1 — Визуальные сигналы",
+    key: "visual",
+  },
+  {
+    section: "Шаг 1 — Размер аудитории",
+    text: "Сколько подписчиков у этого профиля?",
+    hint: "👆 Смотри под именем профиля — цифра подписчиков.",
+    options: [
+      { text: "До 500 — малый аккаунт", size: "малый", correct: false, any: true },
+      { text: "500–5000 — растущий", size: "средний", correct: false, any: true },
+      { text: "5000–20000 — состоявшийся", size: "большой", correct: false, any: true },
+      { text: "20000+ — медийный", size: "медийный", correct: false, any: true },
+    ],
+    feedback: (ans) => {
+      const msgs = {
+        "малый": "Малый аккаунт — все крючки работают вдвое сильнее. Каждое твоё обращение для неё событие.",
+        "средний": "Растущий аккаунт — психолог голоден до роста. Крючок через признание что она недооценена.",
+        "большой": "Состоявшийся — стандартные крючки работают. SOB STORY и моральный рычаг в силе.",
+        "медийный": "Медийный — стандартные крючки не работают. Только через масштаб влияния и интеллектуальный интерес."
+      };
+      return msgs[ans.size];
+    },
+    ref: "Флоучарт: Старт — Усилитель малого аккаунта",
+    key: "size",
+    val: (ans) => ans.size
+  },
+  {
+    section: "Шаг 2 — Крючок",
+    text: "Посмотри на последние 3-5 постов. Есть ли там личный опыт боли или усталости?",
+    hint: "👆 Читай подписи под постами — ищи слова «я сама», «прошла через», «знаю не понаслышке».",
+    options: [
+      { text: "Да — пишет о личном опыте боли, усталости, кризиса", hook: "SOB STORY через личный опыт", correct: false, any: true },
+      { text: "Нет — только экспертный контент, никакой личной боли", hook: "Восхищение концепцией или специализацией", correct: false, any: true },
+      { text: "Пишет о детях или материнстве как о своём опыте", hook: "SOB STORY через детей", correct: false, any: true },
+      { text: "Пишет об идеологии — феминизм, система, несправедливость", hook: "Идеологический крючок — стань союзником", correct: false, any: true },
+    ],
+    feedback: (ans) => `Крючок входа: <strong>${ans.hook}</strong>. Используй именно его — другие сработают слабее или не сработают вообще.`,
+    ref: "Флоучарт: Шаг 2 — Выбери крючок",
+    key: "hook",
+    val: (ans) => ans.hook
+  },
+  {
+    section: "Шаг 2 — Открытые ворота",
+    text: "Есть ли в профиле открытое приглашение писать — бесплатная диагностика, «напишите в директ», «задайте вопрос»?",
+    hint: "👆 Смотри шапку и последние посты — ищи призывы написать или записаться бесплатно.",
+    options: [
+      { text: "Да — есть бесплатная диагностика или прямое приглашение писать", door: "Легальный вход — записывайся без крючка", correct: false, any: true },
+      { text: "Да — в конце постов приглашает написать в комментариях", door: "Публичный комментарий с личной историей", correct: false, any: true },
+      { text: "Нет — только платные форматы, границы чётко обозначены", door: "Нужен крючок — прямой вход закрыт", correct: false, any: true },
+      { text: "Директ открыт, написано прямо в шапке", door: "Директ — самый прямой путь, крючок внутри", correct: false, any: true },
+    ],
+    feedback: (ans) => `Точка входа: <strong>${ans.door}</strong>.`,
+    ref: "Флоучарт: Шаг 2 — Бесплатная диагностика и публичный комментарий",
+    key: "door",
+    val: (ans) => ans.door
+  },
+  {
+    section: "Шаг 3 — Удержание",
+    text: "Посмотри как психолог реагирует на комментарии под постами. Что видишь?",
+    hint: "👆 Открой любой пост с комментариями — смотри на ответы психолога.",
+    options: [
+      { text: "Отвечает на все комментарии, развёрнуто, с заботой", hold: "Резонанс — «только с вами меня понимают»", correct: false, any: true },
+      { text: "Отвечает выборочно, только на содержательные вопросы", hold: "Интеллектуальный вопрос — заинтересуй темой", correct: false, any: true },
+      { text: "Почти не отвечает или отвечает кратко", hold: "Исчезновение + эскалация симптома", correct: false, any: true },
+      { text: "Активно вступает в дискуссии, защищает позицию", hold: "Идеологический союзник или публичный вопрос", correct: false, any: true },
+    ],
+    feedback: (ans) => `Метод удержания: <strong>${ans.hold}</strong>. Именно это работает когда начнёт выставлять границы.`,
+    ref: "Флоучарт: Шаг 3 — Удержание",
+    key: "hold",
+    val: (ans) => ans.hold
+  },
+  {
+    section: "Шаг 4 — Эксплуатация",
+    text: "Что главное в этом профиле с точки зрения ресурса?",
+    hint: "👆 Смотри на всё что видел — что этот психолог может дать охотнику?",
+    options: [
+      { text: "Бесплатные консультации и разборы — она отвечает всем", use: "Время и внимание", correct: false, any: true },
+      { text: "Имя и репутация — её цитата открывает двери", use: "Легитимизация", correct: false, any: true },
+      { text: "Аудитория — через неё доступ к её подписчикам", use: "Доступ к аудитории", correct: false, any: true },
+      { text: "Экспертный контент — архив постов на конкретные темы", use: "Бесплатная библиотека знаний", correct: false, any: true },
+    ],
+    feedback: (ans) => `Главный ресурс: <strong>${ans.use}</strong>. Используй именно его — это то что даёт этот профиль без обязательств.`,
+    ref: "Флоучарт: Шаг 4 — Эксплуатация",
+    key: "use",
+    val: (ans) => ans.use
+  },
+  {
+    section: "Финал — Где открыт ты",
+    text: "Если бы ты сам вёл блог психолога — какой из этих крючков сработал бы на тебе?",
+    hint: "🪞 Это вопрос про тебя. Нет неправильного ответа — только честный.",
+    options: [
+      { text: "Когда кто-то рассказывает свою боль — я не могу не помочь", vuln: "SOB STORY — эмпатический рефлекс работает автоматически", correct: false, any: true },
+      { text: "Когда кто-то говорит что только я понимаю — я чувствую особую связь", vuln: "Резонанс — голод по тому чтобы быть наконец понятым", correct: false, any: true },
+      { text: "Когда кто-то разделяет мои взгляды на психологию — я открываюсь", vuln: "Идеологический крючок — союзник в том во что веришь", correct: false, any: true },
+      { text: "Когда кто-то ставит под сомнение мою компетентность — я начинаю доказывать", vuln: "Репутация роли — клетка из которой нельзя не защищаться", correct: false, any: true },
+    ],
+    feedback: (ans) => `Твоя уязвимость: <strong>${ans.vuln}</strong>. Именно через неё заходят к тебе — так же как ты только что заходил к другим.`,
+    ref: "Флоучарт: Блок 'Где ты сам открыт'",
+    key: "vuln",
+    val: (ans) => ans.vuln
+  }
+];
+
+const PROFILE_LABELS = {
+  light: "Главный свет",
+  visual: "Визуальный сигнал",
+  size: "Размер аудитории",
+  hook: "Крючок входа",
+  door: "Открытые ворота",
+  hold: "Метод удержания",
+  use: "Главный ресурс",
+  vuln: "Твоя уязвимость"
+};
+
+let current = 0;
+let answers = {};
+let answered = false;
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startGame() {
+  current = 0;
+  answers = {};
+  answered = false;
+  renderQ();
+  showScreen('s-game');
+}
+
+function renderQ() {
+  const q = QUESTIONS[current];
+  answered = false;
+
+  const pct = Math.round((current / QUESTIONS.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `Вопрос ${current + 1} из ${QUESTIONS.length}`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+
+  document.getElementById('q-num').textContent = q.section;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('q-hint').textContent = q.hint;
+
+  const fb = document.getElementById('q-feedback');
+  const ref = document.getElementById('q-ref');
+  fb.style.display = 'none';
+  ref.style.display = 'none';
+  document.getElementById('next-btn').style.display = 'none';
+
+  const opts = document.getElementById('q-options');
+  opts.innerHTML = '';
+
+  if (q.type === 'checklist') {
+    renderChecklist(q, opts);
+  } else {
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option';
+      btn.textContent = opt.text;
+      btn.onclick = () => selectOpt(btn, opt, q);
+      opts.appendChild(btn);
+    });
+  }
+}
+
+function renderChecklist(q, container) {
+  const cl = document.createElement('div');
+  cl.className = 'checklist';
+
+  q.items.forEach((item, i) => {
+    const label = document.createElement('label');
+    label.className = 'check-item';
+    label.innerHTML = `
+      <input type="checkbox" data-signal="${item.signal}">
+      <div class="check-box"></div>
+      <span class="check-label">${item.text}</span>
+      <span class="check-signal">${item.signal}</span>`;
+    label.querySelector('input').addEventListener('change', function() {
+      label.classList.toggle('checked', this.checked);
+    });
+    cl.appendChild(label);
+  });
+
+  const btn = document.createElement('button');
+  btn.className = 'check-btn';
+  btn.textContent = 'Готово — что это значит?';
+  btn.onclick = () => submitChecklist(q, cl, btn);
+
+  container.appendChild(cl);
+  container.appendChild(btn);
+}
+
+function submitChecklist(q, cl, btn) {
+  if (answered) return;
+  answered = true;
+  btn.style.display = 'none';
+
+  const checked = [...cl.querySelectorAll('input:checked')].map(i => i.dataset.signal);
+
+  let result, summary;
+  if (checked.length === 0 || checked.includes('закрытый')) {
+    result = 'закрытый';
+    summary = 'Профиль закрытый — стандартные крючки слабее. Ищи открытые ворота: бесплатная диагностика, директ.';
+  } else {
+    // определяем доминирующий свет
+    const lightMap = {
+      'мораль': 0, 'нужность': 0, 'ум': 0, 'жертва': 0,
+      'масштаб': 0, 'уникальность': 0, 'идеология': 0,
+      'жертва/старательница': 0, 'мама-психолог': 0,
+      'уникальность/сила': 0, 'мораль/роль': 0, 'сила/власть': 0,
+      'ум/контент': 0, 'телесная/жертва': 0, 'близость/доверие': 0
+    };
+    const normalize = {
+      'жертва/старательница': 'жертва', 'мама-психолог': 'жертва',
+      'уникальность/сила': 'уникальность', 'мораль/роль': 'мораль',
+      'сила/власть': 'сила', 'ум/контент': 'ум',
+      'телесная/жертва': 'жертва', 'близость/доверие': 'нужность'
+    };
+    const counts = {};
+    checked.forEach(s => {
+      const norm = normalize[s] || s;
+      counts[norm] = (counts[norm] || 0) + 1;
+    });
+    const dominant = Object.keys(counts).sort((a,b) => counts[b]-counts[a]);
+    result = dominant[0];
+    const allSignals = checked.join(', ');
+    summary = `Сигналы: <strong>${allSignals}</strong>. Доминирующий свет — <strong>${result}</strong>. Это главная дверь входа.`;
+  }
+
+  answers[q.key] = result;
+
+  const fb = document.getElementById('q-feedback');
+  fb.className = 'feedback good';
+  fb.innerHTML = summary;
+  fb.style.display = 'block';
+
+  const ref = document.getElementById('q-ref');
+  ref.textContent = '📋 ' + q.ref;
+  ref.style.display = 'block';
+
+  const nb = document.getElementById('next-btn');
+  nb.style.display = 'inline-flex';
+  nb.textContent = current < QUESTIONS.length - 1 ? 'Следующий вопрос →' : 'Собрать профиль →';
+}
+
+function selectOpt(btn, opt, q) {
+  if (answered) return;
+  answered = true;
+
+  document.querySelectorAll('.option').forEach(b => {
+    b.disabled = true;
+    if (b === btn) b.classList.add('selected');
+  });
+
+  answers[q.key] = q.val(opt);
+
+  const fb = document.getElementById('q-feedback');
+  fb.className = 'feedback good';
+  fb.innerHTML = q.feedback(opt);
+  fb.style.display = 'block';
+
+  const ref = document.getElementById('q-ref');
+  ref.textContent = '📋 ' + q.ref;
+  ref.style.display = 'block';
+
+  const nb = document.getElementById('next-btn');
+  nb.style.display = 'inline-flex';
+  nb.textContent = current < QUESTIONS.length - 1 ? 'Следующий вопрос →' : 'Собрать профиль →';
+}
+
+function nextQ() {
+  current++;
+  if (current >= QUESTIONS.length) {
+    showResult();
+  } else {
+    renderQ();
+  }
+}
+
+function showResult() {
+  document.getElementById('progress-fill').style.width = '100%';
+
+  document.getElementById('final-score').textContent = Object.keys(answers).length + '/' + QUESTIONS.length;
+  document.getElementById('final-label').textContent = 'вопросов — профиль собран';
+
+  const pb = document.getElementById('profile-built');
+  pb.innerHTML = Object.keys(PROFILE_LABELS).map(key => {
+    const val = answers[key] || '—';
+    const isVuln = key === 'vuln';
+    return `<div class="profile-row">
+      <span class="profile-key">${PROFILE_LABELS[key]}</span>
+      <span class="profile-val">${isVuln ? `<span class="tag">⚠</span>` : ''} ${val}</span>
+    </div>`;
+  }).join('');
+
+  if (answers.vuln) {
+    document.getElementById('vuln-section').style.display = 'block';
+    document.getElementById('vuln-list').innerHTML = `
+      <div class="vuln-card">
+        <div class="vuln-title">${answers.vuln.split('—')[0].trim()}</div>
+        <div class="vuln-text">Именно через это заходят к тебе — так же как ты только что разбирал чужой профиль. Узнал крючок снаружи — теперь видь его когда он работает на тебе.</div>
+      </div>`;
+  }
+
+  showScreen('s-result');
+}
+</script>
+</body>
+</html>
